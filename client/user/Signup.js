@@ -1,58 +1,67 @@
-import React,{useState} from 'react'
-import { 
-    Button, Card, CardActions, CardContent, 
-    Icon, TextField, Typography, makeStyles, Dialog, 
+import React, { useState } from 'react'
+import { Link } from "react-router-dom"
+import {
+    Button, Card, CardActions, CardContent,
+    Icon, TextField, Typography, makeStyles, Dialog,
     DialogTitle, DialogContent, DialogContentText, DialogActions
 } from "@material-ui/core"
-import { Link } from "react-router-dom"
 
-import {create} from './api-user'
+import { create } from './api-user'
 
 const useStyles = makeStyles(theme => ({
     card: {
-        maxWidth: 600,
-        margin: 'auto',
-        marginTop: theme.spacing(5)
+        maxWidth: 600, margin: 'auto',
+        textAlign: 'center',
+        marginTop: theme.spacing(12),
+        paddingBottom: theme.spacing(2)
     },
+    error: { verticalAlign: 'middle' },
     title: {
-        padding:`${theme.spacing(3)}px ${theme.spacing(2.5)}px ${theme.spacing(2)}px`,
+        marginTop: theme.spacing(2),
         color: theme.palette.openTitle
+    },
+    textField: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        width: 300
+    },
+    submit: {
+        margin: 'auto',
+        marginBottom: theme.spacing(2)
     }
 }))
 
 export default function Signup() {
-    const classes = useStyles() 
-    const [values, setValues] = useState({
-        name: '',
-        password: '',
-        email: '',
-        open: false,
+    const classes = useStyles()
+    const [user, setUser] = useState({
+        name: '', password: '',
+        email: '', open: false,
         error: ''
     })
 
     const handleChange = name => event => {
-        setValues({ ...values, [name]: event.target.value })
+        setUser({ ...user, [name]: event.target.value })
     }
 
     const clickSubmit = () => {
-        const user = {
-            name: values.name || undefined,
-            email: values.email || undefined,
-            password: values.password || undefined
+        const updatedUser = {
+            name: user.name || undefined,
+            email: user.email || undefined,
+            password: user.password || undefined
         }
-        create(user).then((data) => {
+        create(updatedUser).then((data) => {
             if (data.error) {
-                setValues({ ...values, error: data.error})
+                setUser({ ...user, error: data.error })
             } else {
-                setValues({ ...values, error: '', open: true})
+                setUser({ ...user, error: '', open: true })
             }
         })
     }
 
-    const handleOnClose = (event,reason) =>{
+    const handleOnClose = (event, reason) => {
         //Disabling bakdropClick in the Dialog
         if (reason !== 'backdropClick') {
-            setValues({ ...values, open: false})
+            setUser({ ...user, open: false })
         }
     }
 
@@ -65,23 +74,23 @@ export default function Signup() {
                     </Typography>
                     <TextField id="name" label="Name"
                         className={classes.textField}
-                        value={values.name} onChange={handleChange('name')}
-                        margin="normal"/>
-                    <br/>
+                        value={user.name} onChange={handleChange('name')}
+                        margin="normal" />
+                    <br />
                     <TextField id="email" type="email" label="Email"
                         className={classes.textField}
-                        value={values.email} onChange={handleChange('email')}
-                        margin="normal"/>
-                    <br/>
+                        value={user.email} onChange={handleChange('email')}
+                        margin="normal" />
+                    <br />
                     <TextField id="password" type="password" label="Password"
-                        className={classes.textField} value={values.password}
-                        onChange={handleChange('password')} margin="normal"/>
-                    <br/>
+                        className={classes.textField} value={user.password}
+                        onChange={handleChange('password')} margin="normal" />
+                    <br />
                     {
-                        values.error && (
+                        user.error && (
                             <Typography component="p" color="error">
-                            <Icon color="error" className={classes.error}>Error: </Icon>
-                            {values.error}</Typography>
+                                <Icon color="error" className={classes.error}>Error: </Icon>
+                                {user.error}</Typography>
                         )
                     }
                 </CardContent>
@@ -90,7 +99,7 @@ export default function Signup() {
                         className={classes.submit}>Submit</Button>
                 </CardActions>
             </Card>
-            <Dialog open={values.open} onClose={handleOnClose}>
+            <Dialog open={user.open} onClose={handleOnClose}>
                 <DialogTitle>New Account</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
